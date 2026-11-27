@@ -1,0 +1,579 @@
+{{ 'section-aura-hero.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #AuraHero-{{ section.id }} {
+    --hero-bg: {{ section.settings.background_color }};
+    --hero-text: {{ section.settings.text_color }};
+    --hero-muted: {{ section.settings.muted_text_color }};
+    --hero-eyebrow-bg: {{ section.settings.eyebrow_bg_color }};
+    --hero-eyebrow-text: {{ section.settings.eyebrow_text_color }};
+    --hero-btn-bg: {{ section.settings.button_bg_color }};
+    --hero-btn-text: {{ section.settings.button_text_color }};
+    --hero-shape-bg: {{ section.settings.accent_shape_color }};
+    --hero-arch-top: {{ section.settings.image_border_radius_top }}px;
+    --hero-arch-bottom: {{ section.settings.image_border_radius_bottom }}px;
+    --hero-pad-top: {{ section.settings.padding_top }}px;
+    --hero-pad-bottom: {{ section.settings.padding_bottom }}px;
+    --hero-marquee-bg: {{ section.settings.marquee_bg_color }};
+    --hero-marquee-text: {{ section.settings.marquee_text_color }};
+    --hero-marquee-speed: {{ section.settings.marquee_speed }}s;
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign stat_blocks = section.blocks | where: 'type', 'stat'
+  assign marquee_blocks = section.blocks | where: 'type', 'marquee_item'
+
+  assign spotlight_product = section.settings.spotlight_product
+  assign spotlight_img = section.settings.spotlight_image
+  if spotlight_img == blank and spotlight_product != blank
+    assign spotlight_img = spotlight_product.featured_image
+  endif
+
+  assign spotlight_title = section.settings.spotlight_title
+  if spotlight_title == blank and spotlight_product != blank
+    assign spotlight_title = spotlight_product.title
+  endif
+
+  assign spotlight_url = section.settings.spotlight_link
+  if spotlight_url == blank and spotlight_product != blank
+    assign spotlight_url = spotlight_product.url
+  endif
+
+  assign marquee_sep = ''
+  case section.settings.marquee_separator
+    when 'sparkle'
+      assign marquee_sep = '✦'
+    when 'dot'
+      assign marquee_sep = '•'
+  endcase
+
+  assign fetch_priority = 'auto'
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+-%}
+
+<section id="AuraHero-{{ section.id }}" class="aura-hero">
+  <div class="aura-hero__container{% if section.settings.image_position == 'left' %} aura-hero__container--image-left{% endif %}">
+    <div class="aura-hero__content">
+      {%- if section.settings.eyebrow_text != blank -%}
+        <span class="aura-hero__eyebrow">{{ section.settings.eyebrow_text | escape }}</span>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        {%- assign heading_tag = section.settings.heading_tag | default: 'h1' -%}
+        <{{ heading_tag }}
+          class="aura-hero__heading"
+          style="--hero-heading-size: {{ section.settings.heading_size | divided_by: 10.0 }}rem;"
+        >
+          {{ section.settings.heading | escape | newline_to_br }}
+        </{{ heading_tag }}>
+      {%- endif -%}
+
+      {%- if section.settings.description != blank -%}
+        <p class="aura-hero__description">{{ section.settings.description | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank -%}
+        <a
+          href="{{ section.settings.button_link | default: routes.all_products_collection_url }}"
+          class="aura-hero__button focus-inset"
+        >
+          <span>{{ section.settings.button_label | escape }}</span>
+          {%- if section.settings.button_show_arrow -%}
+            <span class="aura-hero__button-arrow" aria-hidden="true">
+              {{- 'icon-arrow.svg' | inline_asset_content -}}
+            </span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+      {%- if stat_blocks.size > 0 -%}
+        <div class="aura-hero__stats">
+          {%- for block in stat_blocks -%}
+            <div class="aura-hero__stat" {{ block.shopify_attributes }}>
+              {%- if block.settings.value != blank -%}
+                <span class="aura-hero__stat-value">{{ block.settings.value | escape }}</span>
+              {%- endif -%}
+              {%- if block.settings.label != blank -%}
+                <span class="aura-hero__stat-label">{{ block.settings.label | escape }}</span>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="aura-hero__media-col">
+      <div class="aura-hero__media-wrap">
+        {%- if section.settings.show_decorative_shape -%}
+          <div class="aura-hero__accent-shape" aria-hidden="true"></div>
+        {%- endif -%}
+
+        <div class="aura-hero__arch">
+          {%- if section.settings.image != blank -%}
+            {%- assign hero_alt = section.settings.image_alt | default: section.settings.image.alt | default: section.settings.heading | strip_html | escape -%}
+            {{
+              section.settings.image
+              | image_url: width: 1200
+              | image_tag:
+                class: 'aura-hero__arch-img',
+                widths: '400, 600, 800, 1000, 1200',
+                sizes: '(min-width: 990px) 470px, 90vw',
+                alt: hero_alt,
+                fetchpriority: fetch_priority
+            }}
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'aura-hero__arch-placeholder placeholder-svg' }}
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.show_spotlight_card -%}
+          {%- if spotlight_url != blank -%}
+            <a href="{{ spotlight_url }}" class="aura-hero__spotlight focus-inset">
+          {%- else -%}
+            <div class="aura-hero__spotlight">
+          {%- endif -%}
+              <div class="aura-hero__spotlight-thumb">
+                {%- if spotlight_img != blank -%}
+                  {%- assign spotlight_alt = spotlight_title | default: 'Featured product' | escape -%}
+                  {{
+                    spotlight_img
+                    | image_url: width: 160
+                    | image_tag:
+                      widths: '80, 160',
+                      sizes: '48px',
+                      alt: spotlight_alt,
+                      loading: 'lazy'
+                  }}
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </div>
+              <div class="aura-hero__spotlight-info">
+                {%- if spotlight_title != blank -%}
+                  <span class="aura-hero__spotlight-title">{{ spotlight_title | escape }}</span>
+                {%- endif -%}
+                {%- if section.settings.spotlight_subtitle != blank -%}
+                  <span class="aura-hero__spotlight-subtitle">{{ section.settings.spotlight_subtitle | escape }}</span>
+                {%- endif -%}
+              </div>
+          {%- if spotlight_url != blank -%}
+            </a>
+          {%- else -%}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  {%- if section.settings.show_marquee and marquee_blocks.size > 0 -%}
+    <div class="aura-hero__marquee" role="region" aria-label="Brand highlights">
+      <div class="aura-hero__marquee-track">
+        {%- for pass in (1..2) -%}
+          <div
+            class="aura-hero__marquee-group{% if pass == 2 %} aura-hero__marquee-group--clone{% endif %}"
+            {% if pass == 2 %}aria-hidden="true"{% endif %}
+          >
+            {%- for repeat in (1..2) -%}
+              {%- for block in marquee_blocks -%}
+                {%- if block.settings.text != blank -%}
+                  <div class="aura-hero__marquee-item" {% if pass == 1 and repeat == 1 %}{{ block.shopify_attributes }}{% endif %}>
+                    {%- if block.settings.link != blank and pass == 1 -%}
+                      <a href="{{ block.settings.link }}" class="aura-hero__marquee-link">
+                        {{ block.settings.text | escape }}
+                      </a>
+                    {%- else -%}
+                      <span>{{ block.settings.text | escape }}</span>
+                    {%- endif -%}
+                    {%- if marquee_sep != blank -%}
+                      <span class="aura-hero__marquee-sep" aria-hidden="true">{{ marquee_sep }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endfor -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Editorial Arch Hero",
+  "class": "aura-hero-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout & Colors"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position on desktop",
+      "options": [
+        { "value": "right", "label": "Right" },
+        { "value": "left", "label": "Left" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#FAF8F2"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading & primary text color",
+      "default": "#1F201D"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Body & muted text color",
+      "default": "#5A5B53"
+    },
+    {
+      "type": "color",
+      "id": "accent_shape_color",
+      "label": "Decorative background circle color",
+      "default": "#E6E1D5"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 72
+    },
+    {
+      "type": "header",
+      "content": "Eyebrow Badge"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_text",
+      "label": "Badge text",
+      "default": "NEW SEASON · AUTUMN / WINTER"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_bg_color",
+      "label": "Badge background",
+      "default": "#6E735E"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_text_color",
+      "label": "Badge text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Heading & Copy"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Winter\nEdit"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading HTML tag",
+      "options": [
+        { "value": "h1", "label": "H1 (use once per page)" },
+        { "value": "h2", "label": "H2 (for secondary sections)" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 40,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "label": "Desktop heading size",
+      "default": 72
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Warm layers, honest fabrics and fits that work every day. Discover the pieces our community wears on repeat this season."
+    },
+    {
+      "type": "header",
+      "content": "Primary CTA Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_show_arrow",
+      "label": "Show arrow icon",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background",
+      "default": "#1F201D"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Arched Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius_top",
+      "min": 0,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Top arch radius",
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Bottom corner radius",
+      "default": 18
+    },
+    {
+      "type": "checkbox",
+      "id": "show_decorative_shape",
+      "label": "Show decorative background shape",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Floating Product Spotlight Card"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_spotlight_card",
+      "label": "Show floating product card",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "spotlight_product",
+      "label": "Linked product (optional)",
+      "info": "Auto-fills image, title, and link unless overridden below."
+    },
+    {
+      "type": "image_picker",
+      "id": "spotlight_image",
+      "label": "Custom card thumbnail"
+    },
+    {
+      "type": "text",
+      "id": "spotlight_title",
+      "label": "Card title",
+      "default": "Yellow Wool Jumper"
+    },
+    {
+      "type": "text",
+      "id": "spotlight_subtitle",
+      "label": "Card subtitle",
+      "default": "Bestseller this week"
+    },
+    {
+      "type": "url",
+      "id": "spotlight_link",
+      "label": "Custom card link"
+    },
+    {
+      "type": "header",
+      "content": "Bottom Marquee Strip"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_marquee",
+      "label": "Show bottom marquee strip",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "marquee_bg_color",
+      "label": "Marquee background",
+      "default": "#6E735E"
+    },
+    {
+      "type": "color",
+      "id": "marquee_text_color",
+      "label": "Marquee text color",
+      "default": "#F7F5EE"
+    },
+    {
+      "type": "select",
+      "id": "marquee_separator",
+      "label": "Marquee separator",
+      "options": [
+        { "value": "sparkle", "label": "Sparkle (✦)" },
+        { "value": "dot", "label": "Dot (•)" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "sparkle"
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "min": 15,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "label": "Scroll duration",
+      "default": 30
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat item",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Metric value",
+          "default": "4.8★"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Metric label",
+          "default": "2,000+ reviews"
+        }
+      ]
+    },
+    {
+      "type": "marquee_item",
+      "name": "Marquee item",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Organic cotton"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorial Arch Hero",
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": {
+            "value": "4.8★",
+            "label": "2,000+ reviews"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "value": "100%",
+            "label": "organic cotton"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "value": "30 days",
+            "label": "free returns"
+          }
+        },
+        {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Organic cotton"
+          }
+        },
+        {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Made to last"
+          }
+        },
+        {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Sizes XS to L"
+          }
+        },
+        {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Free returns"
+          }
+        },
+        {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Ethically made"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,195 @@
+{{ 'section-aura-hellobar.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #AuraHellobar-{{ section.id }} {
+    --hb-bg: {{ section.settings.background_color }};
+    --hb-color: {{ section.settings.text_color }};
+    --hb-accent: {{ section.settings.accent_color }};
+    --hb-font-size: {{ section.settings.font_size | divided_by: 10.0 }}rem;
+    --hb-pad-y: {{ section.settings.padding_vertical }}px;
+    --hb-gap: {{ section.settings.item_gap | divided_by: 10.0 }}rem;
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign sep_char = ''
+  case section.settings.separator_style
+    when 'sparkle'
+      assign sep_char = '✦'
+    when 'dot'
+      assign sep_char = '•'
+    when 'pipe'
+      assign sep_char = '|'
+  endcase
+-%}
+
+{%- if section.blocks.size > 0 -%}
+  <div
+    id="AuraHellobar-{{ section.id }}"
+    class="aura-hellobar{% if section.settings.sticky %} aura-hellobar--sticky{% endif %}{% if section.settings.enable_mobile_marquee %} aura-hellobar--marquee-mobile{% endif %}"
+    role="region"
+    aria-label="{{ section.settings.accessibility_label | default: 'Announcements' | escape }}"
+  >
+    <div class="aura-hellobar__inner">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.text != blank -%}
+          <div class="aura-hellobar__item" {{ block.shopify_attributes }}>
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="aura-hellobar__link aura-hellobar__text">
+                {{- block.settings.text | escape -}}
+              </a>
+            {%- else -%}
+              <span class="aura-hellobar__text">{{ block.settings.text | escape }}</span>
+            {%- endif -%}
+
+            {%- if sep_char != blank and forloop.last == false -%}
+              <span class="aura-hellobar__sep" aria-hidden="true">{{ sep_char }}</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if section.settings.enable_mobile_marquee -%}
+        {%- for block in section.blocks -%}
+          {%- if block.settings.text != blank -%}
+            <div class="aura-hellobar__item medium-up-hide" aria-hidden="true">
+              {%- if sep_char != blank and forloop.first -%}
+                <span class="aura-hellobar__sep">{{ sep_char }}</span>
+              {%- endif -%}
+              <span class="aura-hellobar__text">{{ block.settings.text | escape }}</span>
+              {%- if sep_char != blank and forloop.last == false -%}
+                <span class="aura-hellobar__sep">{{ sep_char }}</span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Hello Bar",
+  "class": "aura-hellobar-section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "text",
+      "id": "accessibility_label",
+      "label": "Accessibility label",
+      "default": "Store announcements"
+    },
+    {
+      "type": "select",
+      "id": "separator_style",
+      "label": "Separator icon",
+      "options": [
+        { "value": "sparkle", "label": "Sparkle (✦)" },
+        { "value": "dot", "label": "Dot (•)" },
+        { "value": "pipe", "label": "Pipe (|)" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "sparkle"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#20211D"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#F7F5EE"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Separator color",
+      "default": "#C8C4B6"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 11,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "min": 6,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "min": 10,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Spacing between items",
+      "default": 22
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "label": "Stick to top on scroll",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mobile_marquee",
+      "label": "Scroll items continuously on mobile",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Announcement item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free shipping on orders over ₹999"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hello Bar",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "text": "Free shipping on orders over ₹999"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "text": "Use code LOOM10 for 10% off your first order"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

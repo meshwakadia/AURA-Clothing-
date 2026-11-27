@@ -1,42 +1,108 @@
 {
   "sections": {
-    "image_banner": {
-      "type": "image-banner",
+    "aura_hero": {
+      "type": "aura-hero",
       "blocks": {
-        "heading": {
-          "type": "heading",
+        "stat_1": {
+          "type": "stat",
           "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
+            "value": "4.8★",
+            "label": "2,000+ reviews"
           }
         },
-        "button": {
-          "type": "buttons",
+        "stat_2": {
+          "type": "stat",
           "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
+            "value": "100%",
+            "label": "organic cotton"
+          }
+        },
+        "stat_3": {
+          "type": "stat",
+          "settings": {
+            "value": "30 days",
+            "label": "free returns"
+          }
+        },
+        "marquee_1": {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Organic cotton",
+            "link": ""
+          }
+        },
+        "marquee_2": {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Made to last",
+            "link": ""
+          }
+        },
+        "marquee_3": {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Sizes XS to L",
+            "link": ""
+          }
+        },
+        "marquee_4": {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Free returns",
+            "link": ""
+          }
+        },
+        "marquee_5": {
+          "type": "marquee_item",
+          "settings": {
+            "text": "Ethically made",
+            "link": ""
           }
         }
       },
       "block_order": [
-        "heading",
-        "button"
+        "stat_1",
+        "stat_2",
+        "stat_3",
+        "marquee_1",
+        "marquee_2",
+        "marquee_3",
+        "marquee_4",
+        "marquee_5"
       ],
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
-        "image_behavior": "none",
-        "desktop_content_alignment": "center",
-        "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
-        "stack_images_on_mobile": false,
-        "show_text_below": false
+        "image_position": "right",
+        "background_color": "#FAF8F2",
+        "text_color": "#1F201D",
+        "muted_text_color": "#5A5B53",
+        "accent_shape_color": "#E6E1D5",
+        "padding_top": 64,
+        "padding_bottom": 72,
+        "eyebrow_text": "NEW SEASON · AUTUMN / WINTER",
+        "eyebrow_bg_color": "#6E735E",
+        "eyebrow_text_color": "#FFFFFF",
+        "heading": "The Winter\nEdit",
+        "heading_tag": "h1",
+        "heading_size": 72,
+        "description": "Warm layers, honest fabrics and fits that work every day. Discover the pieces our community wears on repeat this season.",
+        "button_label": "SHOP NOW",
+        "button_link": "shopify://collections/all",
+        "button_show_arrow": true,
+        "button_bg_color": "#1F201D",
+        "button_text_color": "#FFFFFF",
+        "image_alt": "",
+        "image_border_radius_top": 280,
+        "image_border_radius_bottom": 18,
+        "show_decorative_shape": true,
+        "show_spotlight_card": true,
+        "spotlight_title": "Yellow Wool Jumper",
+        "spotlight_subtitle": "Bestseller this week",
+        "spotlight_link": "",
+        "show_marquee": true,
+        "marquee_bg_color": "#6E735E",
+        "marquee_text_color": "#F7F5EE",
+        "marquee_separator": "sparkle",
+        "marquee_speed": 30
       }
     },
     "featured_collection": {
@@ -69,7 +135,7 @@
     }
   },
   "order": [
-    "image_banner",
+    "aura_hero",
     "featured_collection"
   ]
 }

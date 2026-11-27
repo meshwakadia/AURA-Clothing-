@@ -1,0 +1,102 @@
+.aura-hellobar {
+  background-color: var(--hb-bg, #20211d);
+  color: var(--hb-color, #f7f5ee);
+  font-size: var(--hb-font-size, 1.3rem);
+  line-height: 1.4;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  z-index: 4;
+}
+
+.aura-hellobar--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.aura-hellobar__inner {
+  max-width: var(--page-width, 140rem);
+  margin: 0 auto;
+  padding: var(--hb-pad-y, 10px) 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem var(--hb-gap, 2.2rem);
+  text-align: center;
+}
+
+.aura-hellobar__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hb-gap, 2.2rem);
+  white-space: nowrap;
+}
+
+.aura-hellobar__link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.aura-hellobar__link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}
+
+.aura-hellobar__text {
+  letter-spacing: 0.01em;
+}
+
+.aura-hellobar__sep {
+  color: var(--hb-accent, #c8c4b6);
+  font-size: 0.85em;
+  line-height: 1;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media screen and (max-width: 749px) {
+  .aura-hellobar__inner {
+    padding: var(--hb-pad-y, 9px) 1.4rem;
+    gap: 0.4rem 1.2rem;
+    font-size: calc(var(--hb-font-size, 1.3rem) * 0.92);
+  }
+
+  .aura-hellobar__item {
+    gap: 1.2rem;
+    white-space: normal;
+  }
+
+  .aura-hellobar--marquee-mobile .aura-hellobar__inner {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    width: max-content;
+    animation: aura-hellobar-scroll 18s linear infinite;
+  }
+
+  .aura-hellobar--marquee-mobile .aura-hellobar__item {
+    white-space: nowrap;
+  }
+}
+
+@keyframes aura-hellobar-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-hellobar--marquee-mobile .aura-hellobar__inner {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+    justify-content: center;
+  }
+}

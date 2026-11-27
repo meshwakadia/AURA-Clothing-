@@ -1,0 +1,368 @@
+{{ 'section-aura-header.css' | asset_url | stylesheet_tag }}
+
+{%- if settings.cart_type == 'notification' -%}
+  <link rel="stylesheet" href="{{ 'component-cart-notification.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- endif -%}
+
+{%- style -%}
+  #AuraHeader-{{ section.id }} {
+    --ah-bg: {{ section.settings.background_color }};
+    --ah-text: {{ section.settings.text_color }};
+    --ah-muted: {{ section.settings.muted_text_color }};
+    --ah-border: {{ section.settings.border_color }};
+    --ah-cta-bg: {{ section.settings.cta_background_color }};
+    --ah-cta-text: {{ section.settings.cta_text_color }};
+    --ah-logo-width: {{ section.settings.logo_width }}px;
+    --ah-brand-size: {{ section.settings.brand_font_size | divided_by: 10.0 }}rem;
+    --ah-pad-top: {{ section.settings.padding_top }}px;
+    --ah-pad-bottom: {{ section.settings.padding_bottom }}px;
+  }
+{%- endstyle -%}
+
+<div
+  id="AuraHeader-{{ section.id }}"
+  class="aura-header-wrapper{% if section.settings.show_bottom_border %} aura-header-wrapper--border{% endif %}{% if section.settings.sticky_header %} aura-header-section--sticky{% endif %}"
+>
+  <header class="aura-header">
+    <div class="aura-header__left">
+      {%- if section.settings.menu != blank and section.settings.show_menu -%}
+        <div class="aura-header__mobile-menu">
+          <details class="aura-header__drawer">
+            <summary
+              class="aura-header__drawer-btn focus-inset"
+              aria-label="{{ 'sections.header.menu' | t }}"
+            >
+              <span class="aura-header__icon-open">{{ 'icon-hamburger.svg' | inline_asset_content }}</span>
+              <span class="aura-header__icon-close">{{ 'icon-close.svg' | inline_asset_content }}</span>
+            </summary>
+            <div class="aura-header__drawer-panel">
+              <nav aria-label="{{ 'sections.header.menu' | t }}">
+                <ul class="aura-header__drawer-list">
+                  {%- for link in section.settings.menu.links -%}
+                    <li>
+                      <a
+                        href="{{ link.url }}"
+                        class="aura-header__drawer-link"
+                        {% if link.current %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {{ link.title | escape }}
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </nav>
+              {%- if section.settings.tagline != blank -%}
+                <p class="aura-header__drawer-tagline">{{ section.settings.tagline | escape }}</p>
+              {%- endif -%}
+            </div>
+          </details>
+        </div>
+      {%- endif -%}
+
+      {%- if request.page_type == 'index' and section.settings.use_h1_for_brand -%}
+        <h1 class="aura-header__brand-heading">
+      {%- endif -%}
+      <a href="{{ routes.root_url }}" class="aura-header__brand focus-inset">
+        {%- if section.settings.logo != blank -%}
+          {%- assign logo_alt = section.settings.logo.alt | default: section.settings.brand_text | default: shop.name | escape -%}
+          {%- assign logo_height = section.settings.logo_width | divided_by: section.settings.logo.aspect_ratio -%}
+          {% capture sizes %}(max-width: {{ section.settings.logo_width | times: 2 }}px) 50vw, {{ section.settings.logo_width }}px{% endcapture %}
+          {% capture widths %}{{ section.settings.logo_width }}, {{ section.settings.logo_width | times: 1.5 | round }}, {{ section.settings.logo_width | times: 2 }}{% endcapture %}
+          {{
+            section.settings.logo
+            | image_url: width: 600
+            | image_tag:
+              class: 'aura-header__logo-img motion-reduce',
+              widths: widths,
+              height: logo_height,
+              width: section.settings.logo_width,
+              alt: logo_alt,
+              sizes: sizes,
+              preload: true
+          }}
+        {%- else -%}
+          <span class="aura-header__brand-text">
+            {{ section.settings.brand_text | default: shop.name | escape }}
+          </span>
+        {%- endif -%}
+      </a>
+      {%- if request.page_type == 'index' and section.settings.use_h1_for_brand -%}
+        </h1>
+      {%- endif -%}
+    </div>
+
+    <div class="aura-header__center">
+      {%- if section.settings.show_menu and section.settings.menu != blank -%}
+        <nav aria-label="{{ 'sections.header.menu' | t }}">
+          <ul class="aura-header__nav-list">
+            {%- for link in section.settings.menu.links -%}
+              <li>
+                <a
+                  href="{{ link.url }}"
+                  class="aura-header__nav-link link focus-inset"
+                  {% if link.current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{ link.title | escape }}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+
+      {%- if section.settings.tagline != blank -%}
+        <p class="aura-header__tagline">{{ section.settings.tagline | escape }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="aura-header__right">
+      {%- if section.settings.show_cta and section.settings.cta_label != blank -%}
+        <a
+          href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}"
+          class="aura-header__cta focus-inset"
+        >
+          <span class="aura-header__cta-label">{{ section.settings.cta_label | escape }}</span>
+          {%- if section.settings.cta_show_arrow -%}
+            <span class="aura-header__cta-arrow" aria-hidden="true">
+              {{- 'icon-arrow.svg' | inline_asset_content -}}
+            </span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+      {%- if section.settings.show_cart -%}
+        <a
+          href="{{ routes.cart_url }}"
+          class="aura-header__cart header__icon header__icon--cart link focus-inset"
+          id="cart-icon-bubble"
+        >
+          {% if cart == empty %}
+            <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
+          {% else %}
+            <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
+          {% endif %}
+          <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
+          {%- if cart != empty or section.settings.show_zero_count -%}
+            <div class="cart-count-bubble">
+              {%- if cart.item_count < 100 -%}
+                <span aria-hidden="true">{{ cart.item_count }}</span>
+              {%- endif -%}
+              <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+            </div>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+    </div>
+  </header>
+</div>
+
+{%- if settings.cart_type == 'notification' -%}
+  {%- render 'cart-notification', color_scheme: 'scheme-1', desktop_menu_type: 'dropdown' -%}
+{%- endif -%}
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    {% if section.settings.logo %}
+      "logo": {{ section.settings.logo | image_url: width: 500 | prepend: "https:" | json }},
+    {% elsif settings.logo %}
+      "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
+    {% endif %}
+    "url": {{ request.origin | append: page.url | json }}
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Editorial Header",
+  "class": "section-header aura-header-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Brand & Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 60,
+      "max": 240,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 140
+    },
+    {
+      "type": "text",
+      "id": "brand_text",
+      "label": "Brand name text (used if no logo image)",
+      "default": "Loomhaus"
+    },
+    {
+      "type": "range",
+      "id": "brand_font_size",
+      "min": 18,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "label": "Brand text size",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "use_h1_for_brand",
+      "label": "Use H1 tag for brand on homepage",
+      "default": false,
+      "info": "Keep unchecked if your Hero section already uses H1."
+    },
+    {
+      "type": "header",
+      "content": "Center Tagline & Navigation"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Center tagline",
+      "default": "Clothes made to be worn for years, not seasons."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_menu",
+      "label": "Show navigation menu",
+      "default": false
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "header",
+      "content": "Right CTA Button & Cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show CTA button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA button label",
+      "default": "SHOP THE DROP"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "cta_show_arrow",
+      "label": "Show arrow icon in CTA",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show cart icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_zero_count",
+      "label": "Show badge when cart is empty (0)",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Colors & Behavior"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#FAF8F2"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Primary text color",
+      "default": "#20211D"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Tagline text color",
+      "default": "#4A4B45"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Bottom border color",
+      "default": "#E7E3D7"
+    },
+    {
+      "type": "color",
+      "id": "cta_background_color",
+      "label": "CTA button background",
+      "default": "#EAE6D9"
+    },
+    {
+      "type": "color",
+      "id": "cta_text_color",
+      "label": "CTA button text",
+      "default": "#20211D"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bottom_border",
+      "label": "Show bottom border line",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "Stick header to top on scroll",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 18
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorial Header"
+    }
+  ]
+}
+{% endschema %}

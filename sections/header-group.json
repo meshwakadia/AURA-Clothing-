@@ -1,1 +1,73 @@
-{"name":"t:sections.header.name","type":"header","sections":{"announcement-bar":{"type":"announcement-bar","blocks":{"announcement-bar-0":{"type":"announcement","settings":{"text":"Welcome to our store","link":""}}},"block_order":["announcement-bar-0"],"settings":{"auto_rotate":false,"change_slides_speed":5,"color_scheme":"scheme-1","show_line_separator":true,"show_social":false,"enable_country_selector":false,"enable_language_selector":false}},"header":{"type":"header","settings":{"logo_position":"middle-left","mobile_logo_position":"center","menu":"main-menu","menu_type_desktop":"dropdown","sticky_header_type":"on-scroll-up","show_line_separator":true,"color_scheme":"scheme-1","menu_color_scheme":"scheme-1","enable_country_selector":true,"enable_language_selector":true,"margin_bottom":0,"padding_top":20,"padding_bottom":20}}},"order":["announcement-bar","header"]}
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "aura-hellobar": {
+      "type": "aura-hellobar",
+      "blocks": {
+        "item-1": {
+          "type": "item",
+          "settings": {
+            "text": "Free shipping on orders over ₹999",
+            "link": ""
+          }
+        },
+        "item-2": {
+          "type": "item",
+          "settings": {
+            "text": "Use code LOOM10 for 10% off your first order",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "item-1",
+        "item-2"
+      ],
+      "settings": {
+        "accessibility_label": "Store announcements",
+        "separator_style": "sparkle",
+        "background_color": "#20211D",
+        "text_color": "#F7F5EE",
+        "accent_color": "#C8C4B6",
+        "font_size": 13,
+        "padding_vertical": 10,
+        "item_gap": 22,
+        "sticky": false,
+        "enable_mobile_marquee": false
+      }
+    },
+    "aura-header": {
+      "type": "aura-header",
+      "settings": {
+        "logo_width": 140,
+        "brand_text": "Loomhaus",
+        "brand_font_size": 24,
+        "use_h1_for_brand": false,
+        "tagline": "Clothes made to be worn for years, not seasons.",
+        "show_menu": false,
+        "menu": "main-menu",
+        "show_cta": true,
+        "cta_label": "SHOP THE DROP",
+        "cta_link": "shopify://collections/all",
+        "cta_show_arrow": true,
+        "show_cart": true,
+        "show_zero_count": false,
+        "background_color": "#FAF8F2",
+        "text_color": "#20211D",
+        "muted_text_color": "#4A4B45",
+        "border_color": "#E7E3D7",
+        "cta_background_color": "#EAE6D9",
+        "cta_text_color": "#20211D",
+        "show_bottom_border": true,
+        "sticky_header": false,
+        "padding_top": 18,
+        "padding_bottom": 18
+      }
+    }
+  },
+  "order": [
+    "aura-hellobar",
+    "aura-header"
+  ]
+}
